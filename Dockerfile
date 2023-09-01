@@ -1,17 +1,27 @@
-# Use an official Ruby runtime as a parent image
-FROM ruby:3.0.2
+# Use the official Ruby image as the base image
+FROM ruby:3.0
 
-# Set the working directory to /app
+# Set the working directory in the container
 WORKDIR /app
 
-# Copy the Gemfile and Gemfile.lock from your application directory into the container
+# Install system dependencies
+RUN apt-get update -qq && apt-get install -y build-essential libpq-dev nodejs
+
+# Install Bundler
+RUN gem install bundler
+
+# Copy the Gemfile and Gemfile.lock into the container
 COPY Gemfile Gemfile.lock ./
 
-# Install any needed packages specified in Gemfile
+# Install gems
 RUN bundle install
 
-# Copy the rest of your application code into the container
+# Copy the rest of the application code into the container
 COPY . .
 
-# Start the Rails server
+# Expose port 3000 for the Rails application
+EXPOSE 3000
+
+# Start the Rails application
 CMD ["rails", "server", "-b", "0.0.0.0"]
+
